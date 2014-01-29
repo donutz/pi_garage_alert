@@ -86,3 +86,6 @@ TWILIO_PHONE_NUMBER = '+11234567890'
 
 PUSHOVER_APP_TOKEN = ''
 PUSHOVER_USER_KEY = ''
+PUSHOVER_TITLE = 'Garage Door'
+PUSHOVER_URL = 'http://example.com/garagedoor'
+PUSHOVER_SOUND = 'mechanical'
