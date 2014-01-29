@@ -76,3 +76,13 @@ TWILIO_TOKEN = ''
 
 # SMS will be sent from this phone number
 TWILIO_PHONE_NUMBER = '+11234567890'
+
+#############################################################################
+# Pushover settings
+##############################################################################
+
+# Purchase Pushover app for Android or iPhone, then head to 
+# https://pushover.net to set up an application
+
+PUSHOVER_APP_TOKEN = ''
+PUSHOVER_USER_KEY = ''
