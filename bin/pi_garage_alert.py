@@ -150,6 +150,30 @@ def send_email(recipient, subject, msg):
     mail.quit()
 
 ##############################################################################
+# Pushover support
+##############################################################################
+
+def send_pushover(msg):
+   """Sends a Pushover notification to the specified recipient
+
+   Args:
+        msg: Pushover message to send.
+    """
+    status("Sending pushover to %s: subject = \"%s\", message = \"%s\"" % (recipient, subject, msg))
+
+    conn = httplib.HTTPSConnection("api.pushover.net:443")
+    conn.request("POST", "/1/messages.json",
+      urllib.urlencode({
+        "token": cfg.PUSHOVER_APP_TOKEN,
+        "user": cfg.PUSHOVER_USER_KEY,
+        "title": cfg.PUSHOVER_TITLE,
+        "url": cfg.PUSHOVER_URL,
+        "sound": cfg.PUSHOVER_SOUND,
+        "message": msg,
+      }), { "Content-type": "application/x-www-form-urlencoded" })
+    conn.getresponse()
+
+##############################################################################
 # Sensor support
 ##############################################################################
 
@@ -241,6 +265,8 @@ def send_alerts(recipients, subject, msg):
             twitter_dm(recipient[11:], msg)
         elif recipient[:4] == 'sms:':
             twilio_send_sms(recipient[4:], msg)
+        elif recipient[:9] == 'pushover:':
+            send_pushover(msg)
         else:
             status("Unrecognized recipient type: %s" % (recipient))
 
