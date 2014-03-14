@@ -24,18 +24,18 @@ GARAGE_DOORS = [
 #    },
 
     {
-        'pin': 15,
+        'pin': 26,
         'name': "Example Garage Door",
         'alerts': [
 #            {
 #                'state': 'open',
 #                'time': 120,
-#                'recipients': [ 'sms:+11112223333', 'email:someone@example.com', 'twitter_dm:twitter_user' ]
+#                'recipients': [ 'sms:+11112223333', 'email:someone@example.com', 'twitter_dm:twitter_user', 'pushover:dummvalue' ]
 #            },
 #            {
 #                'state': 'open',
 #                'time': 600,
-#                'recipients': [ 'sms:+11112223333', 'email:someone@example.com', 'twitter_dm:twitter_user' ]
+#                'recipients': [ 'sms:+11112223333', 'email:someone@example.com', 'twitter_dm:twitter_user', 'pushover:dummyvalue' ]
 #            }
         ]
     }
@@ -81,7 +81,7 @@ TWILIO_PHONE_NUMBER = '+11234567890'
 # Pushover settings
 ##############################################################################
 
-# Purchase Pushover app for Android or iPhone, then head to 
+# Purchase Pushover app for Android or iPhone, then head to
 # https://pushover.net to set up an application
 
 PUSHOVER_APP_TOKEN = ''
@@ -89,3 +89,9 @@ PUSHOVER_USER_KEY = ''
 PUSHOVER_TITLE = 'Garage Door'
 PUSHOVER_URL = 'http://example.com/garagedoor'
 PUSHOVER_SOUND = 'mechanical'
+
+##############################################################################
+# State file settings
+##############################################################################
+STATE_FILE_DIR = '/var/www/garagedoor/'
+

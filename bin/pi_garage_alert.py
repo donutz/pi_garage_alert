@@ -41,6 +41,8 @@ import re
 import sys
 import tweepy
 import smtplib
+import httplib
+import urllib
 from email.mime.text import MIMEText
 
 from time import strftime
@@ -127,6 +129,33 @@ def twitter_dm(user, msg):
             status("Unable to send Tweet: %s" % (ex))
 
 ##############################################################################
+# Pushover support
+##############################################################################
+
+def send_pushover(msg):
+   """Sends a Pushover notification to the specified recipient
+
+   Args:
+        msg: Pushover message to send.
+   """
+
+   status("Sending pushover: message = \"%s\"" % (msg))
+   try: 
+       conn = httplib.HTTPSConnection("api.pushover.net:443")
+       conn.request("POST", "/1/messages.json",
+        urllib.urlencode({
+        "token": cfg.PUSHOVER_APP_TOKEN,
+        "user": cfg.PUSHOVER_USER_KEY,
+        "title": cfg.PUSHOVER_TITLE,
+        "url": cfg.PUSHOVER_URL,
+        "sound": cfg.PUSHOVER_SOUND,
+        "message": msg,
+        }), { "Content-type": "application/x-www-form-urlencoded" })
+       conn.getresponse()
+   except:
+       status("Unable to send Pushover")
+
+##############################################################################
 # Email support
 ##############################################################################
 
@@ -148,30 +177,6 @@ def send_email(recipient, subject, msg):
     mail = smtplib.SMTP(cfg.SMTP_SERVER, cfg.SMTP_PORT)
     mail.sendmail(cfg.EMAIL_FROM, recipient, msg.as_string())
     mail.quit()
-
-##############################################################################
-# Pushover support
-##############################################################################
-
-def send_pushover(msg):
-   """Sends a Pushover notification to the specified recipient
-
-   Args:
-        msg: Pushover message to send.
-    """
-    status("Sending pushover to %s: subject = \"%s\", message = \"%s\"" % (recipient, subject, msg))
-
-    conn = httplib.HTTPSConnection("api.pushover.net:443")
-    conn.request("POST", "/1/messages.json",
-      urllib.urlencode({
-        "token": cfg.PUSHOVER_APP_TOKEN,
-        "user": cfg.PUSHOVER_USER_KEY,
-        "title": cfg.PUSHOVER_TITLE,
-        "url": cfg.PUSHOVER_URL,
-        "sound": cfg.PUSHOVER_SOUND,
-        "message": msg,
-      }), { "Content-type": "application/x-www-form-urlencoded" })
-    conn.getresponse()
 
 ##############################################################################
 # Sensor support
@@ -232,6 +237,18 @@ def rpi_status():
 # Logging and alerts
 ##############################################################################
 log_file_handle = None
+
+def csv_status(door, msg):
+    """Log current status to STATE_FILE_DIR/doorname.csv
+    
+    Args: 
+        door: name of door for log file name
+        msg:  message to write to file
+    """
+
+    with open(cfg.STATE_FILE_DIR + "/" + door + ".csv", "w") as f:
+        f.write(msg)
+#        f.flush()
 
 def status(msg):
     """Log status message to LOG_FILENAME.
@@ -338,6 +355,7 @@ def main():
                 door_states[name] = state
                 time_of_last_state_change[name] = time.time()
                 status("State of \"%s\" changed to %s after %.0f sec" % (name, state, time_in_state))
+                csv_status(name,state + "," + strftime("%Y-%m-%d %H:%M:%S"))
 
                 # Reset alert when door changes state
                 if alert_states[name] > 0:
